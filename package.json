@@ -1,0 +1,56 @@
+{
+  "name": "daign-observable",
+  "version": "1.0.0",
+  "description": "Simple implementation of observable pattern",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint -c tslint.json lib/**/*.ts",
+    "test": "mocha -r ts-node/register lib/**/*.spec.ts",
+    "coverage": "nyc mocha -r ts-node/register lib/**/*.spec.ts",
+    "link": "tsc && cp -R package.json dist && cp -R readme.md dist && cd dist && npm link",
+    "publish": "tsc && cp -R package.json dist && cp -R readme.md dist && cd dist && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daign/daign-observable.git"
+  },
+  "author": "Jakob Mischek <jakob.mischek@daign.de> (https://github.com/daign)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/daign/daign-observable/issues"
+  },
+  "homepage": "https://github.com/daign/daign-observable#readme",
+  "devDependencies": {
+    "@types/chai": "^4.1.6",
+    "@types/mocha": "^5.2.5",
+    "@types/sinon": "^5.0.5",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
+    "sinon": "^7.0.0",
+    "source-map-support": "^0.5.10",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.12.1",
+    "tslint-no-unused-expression-chai": "^0.1.4",
+    "typescript": "^3.2.4"
+  },
+  "dependencies": {},
+  "nyc": {
+    "include": [
+      "lib/**/*.ts"
+    ],
+    "exclude": [
+      "lib/**/*.spec.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "sourceMap": true,
+    "instrument": true
+  }
+}
