@@ -1,16 +1,20 @@
 {
-  "name": "daign-observable",
+  "name": "@daign/observable",
   "version": "1.0.0",
-  "description": "Simple implementation of observable pattern",
+  "description": "Simple implementation of observable pattern in Typescript",
+  "keywords": [
+    "observable",
+    "typescript"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "lint": "tslint -c tslint.json lib/**/*.ts",
     "test": "mocha -r ts-node/register lib/**/*.spec.ts",
-    "coverage": "nyc mocha -r ts-node/register lib/**/*.spec.ts",
-    "link": "tsc && cp -R package.json dist && cp -R readme.md dist && cd dist && npm link",
-    "publish": "tsc && cp -R package.json dist && cp -R readme.md dist && cd dist && npm publish"
+    "cover": "nyc mocha -r ts-node/register lib/**/*.spec.ts",
+    "link": "tsc && cp -R package.json dist && cp -R README.md dist && cd dist && npm link",
+    "publish": "tsc && cp -R package.json dist && cp -R README.md dist && cd dist && npm publish --access public"
   },
   "repository": {
     "type": "git",
