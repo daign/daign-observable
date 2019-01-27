@@ -68,5 +68,5 @@ removeListener();
 
     npm run publish
 
-[npm]: https://img.shields.io/npm/v/daign/observable.svg
+[npm]: https://img.shields.io/npm/v/@daign/observable.svg
 [npm-url]: https://www.npmjs.com/package/@daign/observable
