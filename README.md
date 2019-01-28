@@ -48,25 +48,13 @@ removeListener();
 
     npm run build
 
-#### Run unit tests
-
-    npm run test
-
-#### Show code coverage
-
-    npm run cover
-
 #### Run lint analysis
 
     npm run lint
 
-#### Make package available locally
+#### Run unit tests with code coverage
 
-    npm run link
-
-#### Publish package
-
-    npm run publish
+    npm run test
 
 [npm]: https://img.shields.io/npm/v/@daign/observable.svg
 [npm-url]: https://www.npmjs.com/package/@daign/observable

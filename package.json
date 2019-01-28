@@ -6,15 +6,15 @@
     "observable",
     "typescript"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
+  "files": [
+    "dist/lib/**/*"
+  ],
   "scripts": {
-    "build": "tsc",
-    "lint": "tslint -c tslint.json lib/**/*.ts",
-    "test": "mocha -r ts-node/register lib/**/*.spec.ts",
-    "cover": "nyc mocha -r ts-node/register lib/**/*.spec.ts",
-    "link": "tsc && cp -R package.json dist && cp -R README.md dist && cd dist && npm link",
-    "publish": "tsc && cp -R package.json dist && cp -R README.md dist && cd dist && npm publish --access public"
+    "build": "rm -rf dist && mkdir dist && tsc",
+    "lint": "tslint '{lib,test}/**/*.ts'",
+    "test": "nyc mocha -r ts-node/register test/**/*.spec.ts"
   },
   "repository": {
     "type": "git",

@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 
-import {Observable} from './observable';
+import {Observable} from '../lib/observable';
 
 describe( 'Observable', () => {
   class TestClass extends Observable {
