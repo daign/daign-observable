@@ -1,6 +1,6 @@
 {
   "name": "@daign/observable",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple implementation of observable pattern in Typescript",
   "keywords": [
     "observable",
