@@ -15,6 +15,7 @@ npm install @daign/observable --save
 ```typescript
 import {Observable} from '@daign/observable';
 
+// Inherit from Observable
 class MyClass extends Observable {
   private _x: number;
 
@@ -24,6 +25,8 @@ class MyClass extends Observable {
 
   public set x( value: number ) {
     this._x = value;
+
+    // Call notifyObservers to signal a change to the observers
     this.notifyObservers();
   }
 
@@ -34,11 +37,14 @@ class MyClass extends Observable {
 }
 
 const myClass = new MyClass();
+
+// Register a callback to be called on changes
 const removeListener = myClass.subscribeToChanges( () => {
   console.log( myClass.x );
 } );
 myClass.x = 1;
 
+// Remove the callback registration from the observable
 removeListener();
 ```
 
