@@ -8,7 +8,7 @@ export abstract class Observable {
   /**
    * Constructor
    */
-  constructor() {}
+  public constructor() {}
 
   /**
    * Add an observer by passing a callback
@@ -18,8 +18,8 @@ export abstract class Observable {
   public subscribeToChanges( callback: () => void ): () => void {
     this.listeners.push( callback );
 
-    // return callback that removes the listener
-    return () => {
+    // Return callback that removes the listener
+    return (): void => {
       const i = this.listeners.indexOf( callback );
       if ( i > -1 ) {
         this.listeners.splice( i, 1 );

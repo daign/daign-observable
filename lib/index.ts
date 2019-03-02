@@ -1,1 +1,1 @@
-export {Observable} from './observable';
+export { Observable } from './observable';

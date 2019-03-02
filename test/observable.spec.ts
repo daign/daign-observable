@@ -1,76 +1,76 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import * as sinon from 'sinon';
 
-import {Observable} from '../lib/observable';
+import { Observable } from '../lib/observable';
 
 describe( 'Observable', () => {
   class TestClass extends Observable {
-    constructor() {
+    public constructor() {
       super();
     }
   }
 
   describe( 'subscribeToChanges', () => {
     it( 'should add a listener', () => {
-      // arrange
+      // Arrange
       const t = new TestClass();
 
-      // act
+      // Act
       t.subscribeToChanges( () => {} );
 
-      // assert
+      // Assert
       expect( ( t as any ).listeners.length ).to.equal( 1 );
     } );
 
     it( 'should return a callback which allows removal', () => {
-      // arrange
+      // Arrange
       const t = new TestClass();
 
-      // act
+      // Act
       const r = t.subscribeToChanges( () => {} );
       r();
 
-      // assert
+      // Assert
       expect( ( t as any ).listeners.length ).to.equal( 0 );
     } );
 
     it( 'should not throw an error when trying to remove a non-existent listener', () => {
-      // arrange
+      // Arrange
       const t = new TestClass();
       const r = t.subscribeToChanges( () => {} );
-      // listener is removed unexpectedly
+      // Listener is removed unexpectedly
       ( t as any ).listeners = [];
 
-      // act and assert
+      // Act and assert
       expect( r ).to.not.throw();
     } );
   } );
 
   describe( 'notifyObservers', () => {
     it( 'should call the callback', () => {
-      // arrange
+      // Arrange
       const t = new TestClass();
       const spy = sinon.spy();
       t.subscribeToChanges( spy );
 
-      // act
+      // Act
       ( t as any ).notifyObservers();
 
-      // assert
+      // Assert
       expect( spy.calledOnce ).to.be.true;
     } );
   } );
 
   describe( 'clearObservers', () => {
     it( 'should remove all listeners', () => {
-      // arrange
+      // Arrange
       const t = new TestClass();
       t.subscribeToChanges( () => {} );
 
-      // act
+      // Act
       ( t as any ).clearObservers();
 
-      // assert
+      // Assert
       expect( ( t as any ).listeners.length ).to.equal( 0 );
     } );
   } );
