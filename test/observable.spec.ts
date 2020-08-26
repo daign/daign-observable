@@ -3,41 +3,41 @@ import * as sinon from 'sinon';
 
 import { Observable } from '../lib/observable';
 
-describe( 'Observable', () => {
+describe( 'Observable', (): void => {
   class TestClass extends Observable {
     public constructor() {
       super();
     }
   }
 
-  describe( 'subscribeToChanges', () => {
-    it( 'should add a listener', () => {
+  describe( 'subscribeToChanges', (): void => {
+    it( 'should add a listener', (): void => {
       // Arrange
       const t = new TestClass();
 
       // Act
-      t.subscribeToChanges( () => {} );
+      t.subscribeToChanges( (): void => {} );
 
       // Assert
       expect( ( t as any ).listeners.length ).to.equal( 1 );
     } );
 
-    it( 'should return a callback which allows removal', () => {
+    it( 'should return a callback which allows removal', (): void => {
       // Arrange
       const t = new TestClass();
 
       // Act
-      const r = t.subscribeToChanges( () => {} );
+      const r = t.subscribeToChanges( (): void => {} );
       r();
 
       // Assert
       expect( ( t as any ).listeners.length ).to.equal( 0 );
     } );
 
-    it( 'should not throw an error when trying to remove a non-existent listener', () => {
+    it( 'should not throw an error when trying to remove a non-existent listener', (): void => {
       // Arrange
       const t = new TestClass();
-      const r = t.subscribeToChanges( () => {} );
+      const r = t.subscribeToChanges( (): void => {} );
       // Listener is removed unexpectedly
       ( t as any ).listeners = [];
 
@@ -46,8 +46,8 @@ describe( 'Observable', () => {
     } );
   } );
 
-  describe( 'notifyObservers', () => {
-    it( 'should call the callback', () => {
+  describe( 'notifyObservers', (): void => {
+    it( 'should call the callback', (): void => {
       // Arrange
       const t = new TestClass();
       const spy = sinon.spy();
@@ -61,11 +61,11 @@ describe( 'Observable', () => {
     } );
   } );
 
-  describe( 'clearObservers', () => {
-    it( 'should remove all listeners', () => {
+  describe( 'clearObservers', (): void => {
+    it( 'should remove all listeners', (): void => {
       // Arrange
       const t = new TestClass();
-      t.subscribeToChanges( () => {} );
+      t.subscribeToChanges( (): void => {} );
 
       // Act
       ( t as any ).clearObservers();

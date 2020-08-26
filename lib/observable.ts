@@ -3,7 +3,7 @@
  */
 export abstract class Observable {
   // Array of callbacks from the observers
-  private listeners: Array<() => void> = [];
+  private listeners: ( () => void )[] = [];
 
   /**
    * Constructor
