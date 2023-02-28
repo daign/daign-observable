@@ -1,45 +1,50 @@
+import { Subject } from 'rxjs';
+
 /**
- * Basic implementation of observable pattern.
+ * Abstract class that can be subscribed to for changes.
  */
 export abstract class Observable {
-  // Array of callbacks from the observers
-  private listeners: ( () => void )[] = [];
+  // The subject that will forward the notification.
+  private subject: Subject<void> = new Subject<void>();
 
   /**
-   * Constructor
+   * Constructor.
    */
-  public constructor() {}
+  protected constructor() {}
 
   /**
-   * Add an observer by passing a callback
-   * @param callback Callback of the observer
-   * @returns A callback to remove the observer
+   * Add an observer callback that will be called when changes happen.
+   * @param callback - The callback that will be called on changes.
+   * @returns A callback to remove the subscription.
    */
   public subscribeToChanges( callback: () => void ): () => void {
-    this.listeners.push( callback );
-
-    // Return callback that removes the listener
-    return (): void => {
-      const i = this.listeners.indexOf( callback );
-      if ( i > -1 ) {
-        this.listeners.splice( i, 1 );
-      }
-    };
-  }
-
-  /**
-   * Notify all observers by calling their callbacks
-   */
-  protected notifyObservers(): void {
-    this.listeners.forEach( ( callback: () => void ): void => {
+    // Subscribe to the subject and call the callback.
+    const subscription = this.subject.asObservable().subscribe( (): void => {
       callback();
     } );
+
+    // Return a callback that will remove the subscription when called.
+    return (): void => {
+      subscription.unsubscribe();
+    }
   }
 
   /**
-   * Remove all observers
+   * Notify all observers.
+   */
+  protected notifyObservers(): void {
+    // Notify all observers by pushing to the subject.
+    this.subject.next();
+  }
+
+  /**
+   * Remove all observers.
    */
   protected clearObservers(): void {
-    this.listeners = [];
+    // Remove all subscriptions from the subject.
+    this.subject.complete();
+
+    // Create a new subject for new subscriptions.
+    this.subject = new Subject();
   }
 }

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import * as sinon from 'sinon';
+import { spy } from 'sinon';
 
 import { Observable } from '../lib/observable';
 
@@ -11,67 +11,90 @@ describe( 'Observable', (): void => {
   }
 
   describe( 'subscribeToChanges', (): void => {
-    it( 'should add a listener', (): void => {
+    it( 'should add the callback to be called on changes', (): void => {
       // Arrange
-      const t = new TestClass();
+      const test = new TestClass();
+      const callBackSyp = spy();
 
       // Act
-      t.subscribeToChanges( (): void => {} );
+      test.subscribeToChanges( callBackSyp );
+      ( test as any ).notifyObservers();
 
       // Assert
-      expect( ( t as any ).listeners.length ).to.equal( 1 );
+      expect( callBackSyp.calledOnce ).to.be.true;
     } );
 
     it( 'should return a callback which allows removal', (): void => {
       // Arrange
-      const t = new TestClass();
+      const test = new TestClass();
+      const callBackSyp = spy();
 
       // Act
-      const r = t.subscribeToChanges( (): void => {} );
-      r();
+      const remover = test.subscribeToChanges( callBackSyp );
+      remover();
+      ( test as any ).notifyObservers();
 
       // Assert
-      expect( ( t as any ).listeners.length ).to.equal( 0 );
+      expect( callBackSyp.notCalled ).to.be.true;
     } );
 
-    it( 'should not throw an error when trying to remove a non-existent listener', (): void => {
+    it( 'should not throw an error when trying to remove a removed subscription', (): void => {
       // Arrange
-      const t = new TestClass();
-      const r = t.subscribeToChanges( (): void => {} );
-      // Listener is removed unexpectedly
-      ( t as any ).listeners = [];
+      const test = new TestClass();
+      const remover = test.subscribeToChanges( (): void => {} );
+      // Subscription is removed.
+      ( test as any ).clearObservers();
 
       // Act and assert
-      expect( r ).to.not.throw();
+      expect( remover ).to.not.throw();
     } );
   } );
 
   describe( 'notifyObservers', (): void => {
     it( 'should call the callback', (): void => {
       // Arrange
-      const t = new TestClass();
-      const spy = sinon.spy();
-      t.subscribeToChanges( spy );
+      const test = new TestClass();
+      const callBackSyp = spy();
+      test.subscribeToChanges( callBackSyp );
 
       // Act
-      ( t as any ).notifyObservers();
+      ( test as any ).notifyObservers();
 
       // Assert
-      expect( spy.calledOnce ).to.be.true;
+      expect( callBackSyp.calledOnce ).to.be.true;
     } );
   } );
 
   describe( 'clearObservers', (): void => {
-    it( 'should remove all listeners', (): void => {
+    it( 'should not call callback anymore after observers were cleared', (): void => {
       // Arrange
-      const t = new TestClass();
-      t.subscribeToChanges( (): void => {} );
+      const test = new TestClass();
+      const callBackSyp = spy();
+      test.subscribeToChanges( callBackSyp );
 
       // Act
-      ( t as any ).clearObservers();
+      ( test as any ).clearObservers();
+      ( test as any ).notifyObservers();
 
       // Assert
-      expect( ( t as any ).listeners.length ).to.equal( 0 );
+      expect( callBackSyp.notCalled ).to.be.true;
+    } );
+
+    it( 'should allow new subscriptions after observers were cleared', (): void => {
+      // Arrange
+      const test = new TestClass();
+      const callBackSyp1 = spy();
+      const callBackSyp2 = spy();
+      test.subscribeToChanges( callBackSyp1 );
+
+      // Act
+      ( test as any ).clearObservers();
+      test.subscribeToChanges( callBackSyp2 );
+      ( test as any ).notifyObservers();
+
+      // Assert
+      expect( callBackSyp1.notCalled ).to.be.true;
+      expect( callBackSyp2.calledOnce ).to.be.true;
     } );
   } );
 } );
