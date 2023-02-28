@@ -7,6 +7,9 @@ export abstract class Observable {
   // The subject that will forward the notification.
   private subject: Subject<void> = new Subject<void>();
 
+  // Priority actions that are execute before normal observers.
+  private priorityActions: ( () => Promise<void> )[] = [];
+
   /**
    * Constructor.
    */
@@ -30,11 +33,27 @@ export abstract class Observable {
   }
 
   /**
-   * Notify all observers.
+   * Add a priority action.
+   * @param action - The callback to execute for the action.
    */
-  protected notifyObservers(): void {
-    // Notify all observers by pushing to the subject.
-    this.subject.next();
+  public addPriorityAction( action: () => Promise<void> ): void {
+    this.priorityActions.push( action );
+  }
+
+  /**
+   * Notify all observers.
+   * @returns Promise to wait for actions to complete.
+   */
+  protected notifyObservers(): Promise<void> {
+    // Wait for the execution of all priority actions first.
+    return Promise.all(
+      this.priorityActions.map( ( action: () => Promise<void> ): Promise<void> => action() )
+    )
+      .then( (): void => {
+        // Notify all observers by pushing to the subject.
+        this.subject.next();
+      }
+    );
   }
 
   /**

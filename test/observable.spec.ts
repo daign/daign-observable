@@ -11,20 +11,20 @@ describe( 'Observable', (): void => {
   }
 
   describe( 'subscribeToChanges', (): void => {
-    it( 'should add the callback to be called on changes', (): void => {
+    it( 'should add the callback to be called on changes', async (): Promise<void> => {
       // Arrange
       const test = new TestClass();
       const callBackSyp = spy();
 
       // Act
       test.subscribeToChanges( callBackSyp );
-      ( test as any ).notifyObservers();
+      await ( test as any ).notifyObservers();
 
       // Assert
       expect( callBackSyp.calledOnce ).to.be.true;
     } );
 
-    it( 'should return a callback which allows removal', (): void => {
+    it( 'should return a callback which allows removal', async (): Promise<void> => {
       // Arrange
       const test = new TestClass();
       const callBackSyp = spy();
@@ -32,7 +32,7 @@ describe( 'Observable', (): void => {
       // Act
       const remover = test.subscribeToChanges( callBackSyp );
       remover();
-      ( test as any ).notifyObservers();
+      await ( test as any ).notifyObservers();
 
       // Assert
       expect( callBackSyp.notCalled ).to.be.true;
@@ -50,15 +50,39 @@ describe( 'Observable', (): void => {
     } );
   } );
 
+  describe( 'addPriorityAction', (): void => {
+    it( 'should call the priority action before other subscriptions', async (): Promise<void> => {
+      // Arrange
+      const test = new TestClass();
+      const normalSpy = spy();
+      test.subscribeToChanges( normalSpy );
+
+      const prioritySpy = spy();
+      const priorityAction = (): Promise<void> => {
+        prioritySpy();
+        return Promise.resolve();
+      };
+
+      // Act
+      test.addPriorityAction( priorityAction );
+      await ( test as any ).notifyObservers();
+
+      // Assert
+      expect( normalSpy.calledOnce ).to.be.true;
+      expect( prioritySpy.calledOnce ).to.be.true;
+      expect( prioritySpy.calledBefore( normalSpy ) ).to.be.true;
+    } );
+  } );
+
   describe( 'notifyObservers', (): void => {
-    it( 'should call the callback', (): void => {
+    it( 'should call the callback', async (): Promise<void> => {
       // Arrange
       const test = new TestClass();
       const callBackSyp = spy();
       test.subscribeToChanges( callBackSyp );
 
       // Act
-      ( test as any ).notifyObservers();
+      await ( test as any ).notifyObservers();
 
       // Assert
       expect( callBackSyp.calledOnce ).to.be.true;
@@ -66,21 +90,23 @@ describe( 'Observable', (): void => {
   } );
 
   describe( 'clearObservers', (): void => {
-    it( 'should not call callback anymore after observers were cleared', (): void => {
-      // Arrange
-      const test = new TestClass();
-      const callBackSyp = spy();
-      test.subscribeToChanges( callBackSyp );
+    it( 'should not call callback anymore after observers were cleared',
+      async (): Promise<void> => {
+        // Arrange
+        const test = new TestClass();
+        const callBackSyp = spy();
+        test.subscribeToChanges( callBackSyp );
 
-      // Act
-      ( test as any ).clearObservers();
-      ( test as any ).notifyObservers();
+        // Act
+        ( test as any ).clearObservers();
+        await ( test as any ).notifyObservers();
 
-      // Assert
-      expect( callBackSyp.notCalled ).to.be.true;
-    } );
+        // Assert
+        expect( callBackSyp.notCalled ).to.be.true;
+      }
+    );
 
-    it( 'should allow new subscriptions after observers were cleared', (): void => {
+    it( 'should allow new subscriptions after observers were cleared', async (): Promise<void> => {
       // Arrange
       const test = new TestClass();
       const callBackSyp1 = spy();
@@ -90,7 +116,7 @@ describe( 'Observable', (): void => {
       // Act
       ( test as any ).clearObservers();
       test.subscribeToChanges( callBackSyp2 );
-      ( test as any ).notifyObservers();
+      await ( test as any ).notifyObservers();
 
       // Assert
       expect( callBackSyp1.notCalled ).to.be.true;
