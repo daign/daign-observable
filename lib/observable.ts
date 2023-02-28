@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { Subject, Observable as RxObservable, merge, of } from 'rxjs';
 
 /**
  * Abstract class that can be subscribed to for changes.
@@ -8,7 +8,7 @@ export abstract class Observable {
   private subject: Subject<void> = new Subject<void>();
 
   // Priority actions that are execute before normal observers.
-  private priorityActions: ( () => Promise<void> )[] = [];
+  private priorityActions: RxObservable<null>[] = [];
 
   /**
    * Constructor.
@@ -34,26 +34,27 @@ export abstract class Observable {
 
   /**
    * Add a priority action.
-   * @param action - The callback to execute for the action.
+   * @param action - The observable to execute.
    */
-  public addPriorityAction( action: () => Promise<void> ): void {
+  public addPriorityAction( action: RxObservable<null> ): void {
     this.priorityActions.push( action );
   }
 
   /**
    * Notify all observers.
-   * @returns Promise to wait for actions to complete.
    */
-  protected notifyObservers(): Promise<void> {
+  protected notifyObservers(): void {
     // Wait for the execution of all priority actions first.
-    return Promise.all(
-      this.priorityActions.map( ( action: () => Promise<void> ): Promise<void> => action() )
-    )
-      .then( (): void => {
-        // Notify all observers by pushing to the subject.
+    let priorityObservable = of( null );
+    if ( this.priorityActions.length > 0 ) {
+      priorityObservable = merge( ...this.priorityActions, of( null ) );
+    }
+
+    priorityObservable.subscribe( {
+      next: (): void => {
         this.subject.next();
       }
-    );
+    } );
   }
 
   /**
