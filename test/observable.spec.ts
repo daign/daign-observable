@@ -68,9 +68,25 @@ describe( 'Observable', (): void => {
       ( test as any ).notifyObservers();
 
       // Assert
-      expect( normalSpy.calledTwice ).to.be.true;
+      expect( normalSpy.calledOnce ).to.be.true;
       expect( prioritySpy.calledOnce ).to.be.true;
       expect( prioritySpy.calledBefore( normalSpy ) ).to.be.true;
+    } );
+
+    it( 'should call observers once after multiple priority actions', (): void => {
+      // Arrange
+      const test = new TestClass();
+      const normalSpy = spy();
+      test.subscribeToChanges( normalSpy );
+
+      // Act
+      test.addPriorityAction( of( null ) );
+      test.addPriorityAction( of( null ) );
+      test.addPriorityAction( of( null ) );
+      ( test as any ).notifyObservers();
+
+      // Assert
+      expect( normalSpy.calledOnce ).to.be.true;
     } );
   } );
 

@@ -1,4 +1,4 @@
-import { Subject, Observable as RxObservable, merge, of } from 'rxjs';
+import { Subject, Observable as RxObservable, flatMap, forkJoin, of } from 'rxjs';
 
 /**
  * Abstract class that can be subscribed to for changes.
@@ -47,7 +47,10 @@ export abstract class Observable {
     // Wait for the execution of all priority actions first.
     let priorityObservable = of( null );
     if ( this.priorityActions.length > 0 ) {
-      priorityObservable = merge( ...this.priorityActions, of( null ) );
+      priorityObservable = forkJoin( this.priorityActions )
+        .pipe( flatMap( (): RxObservable<null> => {
+          return of( null );
+        } ) );
     }
 
     priorityObservable.subscribe( {
