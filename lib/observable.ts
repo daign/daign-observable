@@ -1,69 +1,45 @@
-import { Subject } from 'rxjs';
-
 /**
- * Abstract class that can be subscribed to for changes.
+ * Basic implementation of observable pattern.
  */
 export abstract class Observable {
-  // The subject that will forward the notification.
-  private subject: Subject<void> = new Subject<void>();
-
-  // Priority actions that are execute before normal observers.
-  private priorityActions: ( () => Promise<void> )[] = [];
+  // Array of callbacks from the observers
+  private listeners: ( () => void )[] = [];
 
   /**
-   * Constructor.
+   * Constructor
    */
-  protected constructor() {}
+  public constructor() {}
 
   /**
-   * Add an observer callback that will be called when changes happen.
-   * @param callback - The callback that will be called on changes.
-   * @returns A callback to remove the subscription.
+   * Add an observer by passing a callback
+   * @param callback Callback of the observer
+   * @returns A callback to remove the observer
    */
   public subscribeToChanges( callback: () => void ): () => void {
-    // Subscribe to the subject and call the callback.
-    const subscription = this.subject.asObservable().subscribe( (): void => {
+    this.listeners.push( callback );
+
+    // Return callback that removes the listener
+    return (): void => {
+      const i = this.listeners.indexOf( callback );
+      if ( i > -1 ) {
+        this.listeners.splice( i, 1 );
+      }
+    };
+  }
+
+  /**
+   * Notify all observers by calling their callbacks
+   */
+  protected notifyObservers(): void {
+    this.listeners.forEach( ( callback: () => void ): void => {
       callback();
     } );
-
-    // Return a callback that will remove the subscription when called.
-    return (): void => {
-      subscription.unsubscribe();
-    }
   }
 
   /**
-   * Add a priority action.
-   * @param action - The callback to execute for the action.
-   */
-  public addPriorityAction( action: () => Promise<void> ): void {
-    this.priorityActions.push( action );
-  }
-
-  /**
-   * Notify all observers.
-   * @returns Promise to wait for actions to complete.
-   */
-  protected notifyObservers(): Promise<void> {
-    // Wait for the execution of all priority actions first.
-    return Promise.all(
-      this.priorityActions.map( ( action: () => Promise<void> ): Promise<void> => action() )
-    )
-      .then( (): void => {
-        // Notify all observers by pushing to the subject.
-        this.subject.next();
-      }
-    );
-  }
-
-  /**
-   * Remove all observers.
+   * Remove all observers
    */
   protected clearObservers(): void {
-    // Remove all subscriptions from the subject.
-    this.subject.complete();
-
-    // Create a new subject for new subscriptions.
-    this.subject = new Subject();
+    this.listeners = [];
   }
 }
