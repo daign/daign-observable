@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import * as sinon from 'sinon';
+import { spy } from 'sinon';
 
-import { Observable } from '../lib/observable';
+import { Observable } from '../lib';
 
 describe( 'Observable', (): void => {
   class TestClass extends Observable {
@@ -50,14 +50,14 @@ describe( 'Observable', (): void => {
     it( 'should call the callback', (): void => {
       // Arrange
       const t = new TestClass();
-      const spy = sinon.spy();
-      t.subscribeToChanges( spy );
+      const spyCallback = spy();
+      t.subscribeToChanges( spyCallback );
 
       // Act
       ( t as any ).notifyObservers();
 
       // Assert
-      expect( spy.calledOnce ).to.be.true;
+      expect( spyCallback.calledOnce ).to.be.true;
     } );
   } );
 
